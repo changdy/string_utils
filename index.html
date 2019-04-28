@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="vendor/style/bulma.min.css" />
+    <style>
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      body {
+        -webkit-app-region: drag;
+        font-family: "Source Code Variable", Monaco, Roboto, Oxygen, Ubuntu,
+          Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica,
+          Arial, sans-serif !important;
+      }
+      textarea,
+      .select,
+      .button {
+        -webkit-app-region: no-drag;
+      }
+    </style>
+  </head>
+  <body style="background-color:#666;height: 300px">
+    <section class="section" style="padding: 1.2rem;height: 300px;">
+      <div class="container">
+        <textarea
+          cols="40"
+          rows="9"
+          id="textarea"
+          class="textarea is-primary"
+          style="resize: none;font-size: 22px;line-height: 24px;padding: 0.45rem;"
+          readonly
+        ></textarea>
+      </div>
+      <div class="container" style="margin-top:7px">
+        <nav class="level">
+          <div class="level-left"></div>
+          <div class="level-right">
+            <div class="select" style="margin-right:5px">
+              <select id="type-select">
+                <optgroup label="字符串拼接">
+                  <option value="sort">排序并去重</option>
+                  <option value="mybatis">mybatis注解</option>
+                  <option value="join">id拼接</option>
+                </optgroup>
+              </select>
+            </div>
+            <a class="button" id="btn">确定</a>
+          </div>
+        </nav>
+      </div>
+    </section>
+    <script>
+      require("./string-operate.js");
+      require("./function-switch.js");
+      require("./vendor/js/fontawesome.js");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "js_utils",
+  "productName": "js_utils",
+  "description": "一些基础工具",
+  "keywords": [],
+  "license": "MIT",
+  "main": "./main.js",
+  "version": "1.0.0",
+  "author": "changdy",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^4.1.4",
+    "electron-builder": "^20.39.0"
+  },
+  "build": {
+    "appId": "changdy.util"
+  }
+}
