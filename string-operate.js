@@ -19,9 +19,17 @@ copyBtn.addEventListener("click", () => {
 });
 // 排序
 function sortJoins(temp) {
-  return Array.from(new Set(temp.split("\n")))
-    .sort((a, b) => a.toLowerCase() > b.toLowerCase())
-    .join("\n");
+  let tempArr = Array.from(new Set(temp.split("\n")));
+  if (tempArr.every(x => parseFloat(x).toString() !== "NaN")) {
+    return tempArr
+      .map(x => parseFloat(x))
+      .sort((a, b) => (a - b > 0 ? 1 : -1))
+      .join("\n");
+  } else {
+    return tempArr
+      .sort((a, b) => (a.toLowerCase() > b.toLowerCase() ? 1 : -1))
+      .join("\n");
+  }
 }
 // mybatis操作
 function mybatisJoins(temp) {
