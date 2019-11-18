@@ -36,6 +36,14 @@ function changeSelectValue(value) {
 currentWin.on("focus", () => {
   let currentValue = clipboard.readText();
   if (currentValue) {
+    currentValue = currentValue.trim().replace(/\r/g, ""); // win 平台下面是\r\n 需要注意
     textArea.value = currentValue;
+    if (currentValue.includes("@")) {
+      typeSelect.value = "mybatis";
+    } else {
+      let strArr = currentValue.split("\n");
+      let setSize = new Set(strArr).size;
+      typeSelect.value = strArr.length === setSize ? "join" : "sort";
+    }
   }
 });
