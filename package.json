@@ -5,7 +5,7 @@
   "keywords": [],
   "license": "MIT",
   "main": "./main.js",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "author": "changdy",
   "scripts": {
     "start": "electron .",
