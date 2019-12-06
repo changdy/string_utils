@@ -1,5 +1,6 @@
 const { clipboard } = require("electron");
 
+const BigNumber = require('bignumber.js');
 const textArea = document.getElementById("textarea");
 const copyBtn = document.getElementById("btn");
 const typeSelect = document.getElementById("type-select");
@@ -22,8 +23,9 @@ function sortJoins(temp) {
   let tempArr = Array.from(new Set(temp.split("\n")));
   if (tempArr.every(x => parseFloat(x).toString() !== "NaN")) {
     return tempArr
-      .map(x => parseFloat(x))
-      .sort((a, b) => (a - b > 0 ? 1 : -1))
+      .map(x => new BigNumber(x))
+      .sort((a, b) => a.comparedTo(b))
+      .map(x => x.toFixed())
       .join("\n");
   } else {
     return tempArr
