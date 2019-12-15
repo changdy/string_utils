@@ -1,6 +1,6 @@
 const { clipboard } = require("electron");
 
-const BigNumber = require('bignumber.js');
+const BigNumber = require("bignumber.js");
 const textArea = document.getElementById("textarea");
 const copyBtn = document.getElementById("btn");
 const typeSelect = document.getElementById("type-select");
@@ -14,6 +14,8 @@ copyBtn.addEventListener("click", () => {
     inputString = sortJoins(inputString);
   } else if (selectValue === "join") {
     inputString = strJoins(inputString);
+  } else if (selectValue === "log") {
+    inputString = logToSql(inputString);
   }
   clipboard.writeText(inputString);
   textArea.value = inputString;
@@ -55,4 +57,118 @@ function strJoins(temp) {
   } else {
     return '"' + tempArr.join('","') + '"';
   }
+}
+
+let keyWordsArr = "Byte,null,Float,Long,Short,String,Double,Integer,Boolean,Timestamp,LocalDate,BigDecimal,LocalDateTime"
+  .split(",")
+  .map(x => x + "), ");
+
+class MybatisLog {
+  constructor(isParam, arr) {
+    this.isParam = isParam;
+    this.isUsed = false;
+    this.arr = arr === undefined ? [] : arr;
+  }
+  push(item) {
+    this.arr.push(item);
+  }
+  setParamUsed() {
+    this.isUsed = true;
+  }
+  effectiveParam(length) {
+    return this.isParam && !this.isUsed && this.arr.length === length;
+  }
+  getLength() {
+    return this.arr.length;
+  }
+}
+
+function logToSql(logs) {
+  let logArr = logs.split("\n");
+  let resultArr = [];
+  for (let index = 0; index < logArr.length; index++) {
+    const element = logArr[index];
+    if (element.includes(" ==> Parameters:")) {
+      let arr = parseParamLog(element);
+      if (arr.length > 0) {
+        resultArr.push(new MybatisLog(true, arr));
+      }
+    } else if (element.includes(" ==>  Preparing:")) {
+      let arr = element.replace(/.+==>  Preparing: /, "").split("?");
+      resultArr.push(new MybatisLog(false, arr));
+    }
+  }
+  let sqlArr = [];
+  for (let index = 0; index < resultArr.length; index++) {
+    const element = resultArr[index];
+    if (!element.isParam) {
+      if (element.getLength() == 1) {
+        sqlArr.push(element.arr[0]);
+      } else {
+        sqlArr.push(getRealSql(resultArr, index));
+      }
+    }
+  }
+  return sqlArr.join("\n");
+}
+
+function getRealSql(resultArr, index) {
+  const element = resultArr[index];
+  for (let j = index + 1; j < resultArr.length; j++) {
+    let params = resultArr[j];
+    // 判断是否匹配
+    if (params.effectiveParam(element.getLength() - 1)) {
+      let paramsArr = params.arr;
+      let sql = "";
+      // 如果匹配的话, 拼接字符串
+      for (let l = 0; l < paramsArr.length; l++) {
+        sql += element.arr[l] + paramsArr[l];
+      }
+      sql += element.arr[paramsArr.length];
+      // 判断是否包含`;`
+      if (!element.arr[paramsArr.length].includes(";")) {
+        sql += ";";
+      }
+      resultArr[j].setParamUsed();
+      return sql;
+    }
+  }
+  return element.arr.join("");
+}
+
+function parseParamLog(paramLog) {
+  let chars = (paramLog.replace(/.+==> Parameters: /, "") + ", ")
+    .replace(/, null, /g, ", null(null), ")
+    .replace(/^null, /, "null(null), ")
+    .split("");
+  if (chars.length <= 3) {
+    return [];
+  }
+  let paramValue = [];
+  for (let i = 1, j = 0; i < chars.length; i++) {
+    if (chars[i] === "(") {
+      // 这里获取类型
+      let type = chars.slice(i + 1, i + 17).join("");
+      // 这里获取 参数信息
+      let value = chars.slice(j, i).join("");
+      for (const item of keyWordsArr) {
+        if (type.startsWith(item)) {
+          if (item.startsWith("LocalDateTime")) {
+            value = `'${value.replace("T", " ").replace(/\.\d+$/, "")}'`;
+          } else if (
+            item.startsWith("String") ||
+            item.startsWith("Timestamp") ||
+            item.startsWith("LocalDate")
+          ) {
+            value = `'${value}'`;
+          }
+          j = i + item.length + 1;
+          i += item.length + 2;
+          paramValue.push(value);
+          break;
+        }
+      }
+    }
+  }
+  return paramValue;
 }

@@ -40,6 +40,8 @@ currentWin.on("focus", () => {
     textArea.value = currentValue;
     if (currentValue.includes("@")) {
       typeSelect.value = "mybatis";
+    } else if (currentValue.includes(" ==>  Preparing:")) {
+      typeSelect.value = "log";
     } else {
       let strArr = currentValue.split("\n");
       let setSize = new Set(strArr).size;
