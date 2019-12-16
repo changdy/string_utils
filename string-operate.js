@@ -163,7 +163,8 @@ function parseParamLog(paramLog) {
             value = `'${value}'`;
           }
           j = i + item.length + 1;
-          i += item.length + 2;
+          // 此处 i 此处赋值之后 会再for 里面再次加1
+          i = j;
           paramValue.push(value);
           break;
         }
