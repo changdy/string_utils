@@ -164,7 +164,7 @@ function parseParamLog(paramLog) {
           }
           j = i + item.length + 1;
           // 此处 i 此处赋值之后 会再for 里面再次加1
-          i = j;
+          i = j - 1; // 避免空字符串判断失败
           paramValue.push(value);
           break;
         }
