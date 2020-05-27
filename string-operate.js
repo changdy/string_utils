@@ -23,7 +23,7 @@ copyBtn.addEventListener("click", () => {
 // 排序
 function sortJoins(temp) {
   let tempArr = Array.from(new Set(temp.split("\n")));
-  if (tempArr.every(x => parseFloat(x).toString() !== "NaN")) {
+  if (tempArr.every((x) =>new BigNumber(x).toString() !== "NaN")) {
     return tempArr
       .map(x => new BigNumber(x))
       .sort((a, b) => a.comparedTo(b))
