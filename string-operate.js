@@ -59,7 +59,7 @@ function strJoins(temp) {
   }
 }
 
-let keyWordsArr = "Byte,null,Float,Long,Short,String,Double,Integer,Boolean,Timestamp,LocalDate,BigDecimal,LocalDateTime"
+let keyWordsArr = "Byte,null,Float,Long,Short,String,Double,Integer,Boolean,Timestamp,LocalDate,BigDecimal,LocalDateTime,StringReader"
   .split(",")
   .map(x => x + "), ");
 
@@ -139,6 +139,7 @@ function getRealSql(resultArr, index) {
 function parseParamLog(paramLog) {
   let chars = (paramLog.replace(/.+==> Parameters: /, "") + ", ")
     .replace(/, null, /g, ", null(null), ")
+    .replace(/, null, /g, ", null(null), ")
     .replace(/^null, /, "null(null), ")
     .split("");
   if (chars.length <= 3) {
@@ -157,6 +158,7 @@ function parseParamLog(paramLog) {
             value = `'${value.replace("T", " ").replace(/\.\d+$/, "")}'`;
           } else if (
             item.startsWith("String") ||
+            item.startsWith("StringReader") ||
             item.startsWith("Timestamp") ||
             item.startsWith("LocalDate")
           ) {
