@@ -12,10 +12,14 @@ copyBtn.addEventListener("click", () => {
     inputString = mybatisJoins(inputString);
   } else if (selectValue === "sort") {
     inputString = sortJoins(inputString);
+    typeSelect.value = "join";
   } else if (selectValue === "join") {
     inputString = strJoins(inputString);
   } else if (selectValue === "log") {
     inputString = logToSql(inputString);
+  } else if (selectValue === "generate") {
+    inputString = generate(inputString);
+    typeSelect.value = "sort";
   }
   clipboard.writeText(inputString);
   textArea.value = inputString;
@@ -23,22 +27,25 @@ copyBtn.addEventListener("click", () => {
 // 排序
 function sortJoins(temp) {
   let tempArr = Array.from(new Set(temp.split("\n")));
-  if (tempArr.every((x) =>new BigNumber(x).toString() !== "NaN")) {
+  if (tempArr.every((x) => new BigNumber(x).toString() !== "NaN")) {
     return tempArr
-      .map(x => new BigNumber(x))
+      .map((x) => new BigNumber(x))
       .sort((a, b) => a.comparedTo(b))
-      .map(x => x.toFixed())
+      .map((x) => x.toFixed())
       .join("\n");
   } else {
-    return tempArr
-      .sort((a, b) => (a.toLowerCase() > b.toLowerCase() ? 1 : -1))
-      .join("\n");
+    return tempArr.sort((a, b) => (a.toLowerCase() > b.toLowerCase() ? 1 : -1)).join("\n");
   }
 }
 // mybatis操作
 function mybatisJoins(temp) {
   temp = temp.replace(/@Select\(|@Update\(|@Delete\(|@Insert\(/, "");
   return eval(temp.substring(0, temp.lastIndexOf(")")).trim());
+}
+
+// 生成数字
+function generate(inputString) {
+  return [...new Array(parseInt(inputString)).keys()].reverse().join('\n')
 }
 
 // 字符串拼接
@@ -61,7 +68,7 @@ function strJoins(temp) {
 
 let keyWordsArr = "Byte,null,Float,Long,Short,String,Double,Integer,Boolean,Timestamp,LocalDate,BigDecimal,LocalDateTime,StringReader"
   .split(",")
-  .map(x => x + "), ");
+  .map((x) => x + "), ");
 
 class MybatisLog {
   constructor(isParam, arr) {
