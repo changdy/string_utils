@@ -16,7 +16,7 @@
     "bignumber.js": "^9.0.0"
   },
   "devDependencies": {
-    "electron": "^4.1.4",
+    "electron": "^7.2.4",
     "electron-builder": "^20.39.0"
   },
   "build": {

@@ -42,7 +42,7 @@ currentWin.on("focus", () => {
       typeSelect.value = "generate";
     } else if (currentValue.includes(" ==>  Preparing:")) {
       typeSelect.value = "log";
-    } else if (reg.test(currentValue)) {
+    } else if (mybatisReg.test(currentValue)) {
       typeSelect.value = "mybatis";
     } else {
       let strArr = currentValue.split("\n");
