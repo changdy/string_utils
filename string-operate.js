@@ -13,6 +13,9 @@ copyBtn.addEventListener("click", () => {
   } else if (selectValue === "sort") {
     inputString = sortJoins(inputString);
     typeSelect.value = "join";
+  } else if (selectValue === "sql") {
+    inputString = getInfoBySql(inputString);
+    typeSelect.value = "sort";
   } else if (selectValue === "join") {
     inputString = strJoins(inputString);
   } else if (selectValue === "log") {
@@ -24,6 +27,28 @@ copyBtn.addEventListener("click", () => {
   clipboard.writeText(inputString);
   textArea.value = inputString;
 });
+
+function getInfoBySql(str) {
+  let tempArr = str.split("\n");
+  if (tempArr.every((x) => / SET  WHERE /.test(x))) {
+    tempArr = tempArr.map((x) => {
+      return x
+        .replace(/^UPDATE.+?= /, "")
+        .replace(/;$/, "")
+        .replace(/^'|^`|'$|`$/g, "");
+    });
+  } else {
+    tempArr = tempArr.map((x) => {
+      return x
+        .replace(/^UPDATE .+?= /, "")
+        .replace(/;$/, "")
+        .replace(/ where.+/i, "")
+        .replace(/^'|^`|'$|`$/g, "");
+    });
+  }
+  return tempArr.join("\n");
+}
+
 // 排序
 function sortJoins(temp) {
   let tempArr = Array.from(new Set(temp.split("\n")));
@@ -45,7 +70,7 @@ function mybatisJoins(temp) {
 
 // 生成数字
 function generate(inputString) {
-  return [...new Array(parseInt(inputString)).keys()].reverse().join('\n')
+  return [...new Array(parseInt(inputString)).keys()].reverse().join("\n");
 }
 
 // 字符串拼接

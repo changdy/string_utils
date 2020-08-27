@@ -44,6 +44,8 @@ currentWin.on("focus", () => {
       typeSelect.value = "log";
     } else if (mybatisReg.test(currentValue)) {
       typeSelect.value = "mybatis";
+    } else if (currentValue.split("\n").every((x) => x.startsWith("UPDATE"))) {
+      typeSelect.value = "sql";
     } else {
       let strArr = currentValue.split("\n");
       let setSize = new Set(strArr).size;
