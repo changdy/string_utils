@@ -114,10 +114,17 @@ class MybatisLog {
     return this.arr.length;
   }
 }
-
+let logTypeArr = [' DEBUG ', ' INFO ', ' TRACE ', ' WARN ', ' ERROR ']
 function logToSql(logs) {
   let logArr = logs.split("\n");
   let resultArr = [];
+  for (let index = logArr.length - 1; index > 0; index--) {
+    if (/\(.+?\)$/.test(logArr[index]) && logTypeArr.every(x => !logArr[index].includes(x))) {
+      logArr[index - 1] = logArr[index - 1] + "\n" + logArr[index];
+      logArr[index] = "";
+    }
+  }
+
   for (let index = 0; index < logArr.length; index++) {
     const element = logArr[index];
     if (element.includes(" ==> Parameters:")) {
