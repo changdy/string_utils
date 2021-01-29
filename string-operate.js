@@ -1,5 +1,5 @@
 const { clipboard } = require("electron");
-
+const CryptoJS = require("crypto-js");
 const BigNumber = require("bignumber.js");
 const textArea = document.getElementById("textarea");
 const copyBtn = document.getElementById("btn");
@@ -22,6 +22,9 @@ copyBtn.addEventListener("click", () => {
     inputString = logToSql(inputString);
   } else if (selectValue === "generate") {
     inputString = generate(inputString);
+    typeSelect.value = "sort";
+  } else if (selectValue === "des") {
+    inputString = getDAesString(inputString);
     typeSelect.value = "sort";
   }
   clipboard.writeText(inputString);
@@ -214,3 +217,25 @@ function parseParamLog(paramLog) {
   }
   return paramValue;
 }
+
+let key = CryptoJS.enc.Utf8.parse(process.env["jsutils_key"] ?? "");
+let iv = CryptoJS.enc.Utf8.parse(process.env["jsutils_iv"] ?? "");
+
+function getDAesString(encrypted) {
+  try {
+    let decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+      iv: iv,
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
+    });
+    return decrypted.toString(CryptoJS.enc.Utf8) ?? "";
+  } catch (err) {
+    return "";
+  }
+}
+
+module.exports = {
+  getDAesString: function (encrypted) {
+    return getDAesString(encrypted);
+  },
+};

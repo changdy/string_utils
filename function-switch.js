@@ -1,6 +1,6 @@
 const { clipboard } = require("electron");
 const { BrowserWindow } = require("electron").remote;
-
+const operate = require("./string-operate");
 const textArea = document.getElementById("textarea");
 const typeSelect = document.getElementById("type-select");
 const copyBtn = document.getElementById("btn");
@@ -38,6 +38,11 @@ currentWin.on("focus", () => {
   if (currentValue) {
     currentValue = currentValue.trim().replace(/\r/g, ""); // win 平台下面是\r\n 需要注意
     textArea.value = currentValue;
+    let desValue = operate.getDAesString(currentValue);
+    if (desValue !== "" && desValue !== undefined) {
+      typeSelect.value = "des";
+      return;
+    }
     if (numberReg.test(currentValue)) {
       typeSelect.value = "generate";
     } else if (currentValue.includes(" ==>  Preparing:")) {
