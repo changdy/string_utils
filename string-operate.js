@@ -45,7 +45,7 @@ function getInfoBySql(str) {
       return x
         .replace(/^.+\) VALUES \(/, "")
         .replace(/\);$/, "")
-        .replace(/^'|'$/, "");
+        .replace(/^'|'$/g, "");
     });
   } else {
     tempArr = tempArr.map((x) => {
