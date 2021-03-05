@@ -49,7 +49,7 @@ currentWin.on("focus", () => {
       typeSelect.value = "log";
     } else if (mybatisReg.test(currentValue)) {
       typeSelect.value = "mybatis";
-    } else if (currentValue.split("\n").every((x) => x.startsWith("UPDATE"))) {
+    } else if (currentValue.split("\n").every((x) => x.startsWith("UPDATE") || x.startsWith("INSERT ") )) {
       typeSelect.value = "sql";
     } else {
       let strArr = currentValue.split("\n");

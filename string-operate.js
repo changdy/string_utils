@@ -40,6 +40,13 @@ function getInfoBySql(str) {
         .replace(/;$/, "")
         .replace(/^'|^`|'$|`$/g, "");
     });
+  } else if (tempArr.every((x) => x.startsWith("INSERT "))) {
+    tempArr = tempArr.map((x) => {
+      return x
+        .replace(/^.+\) VALUES \(/, "")
+        .replace(/\);$/, "")
+        .replace(/^'|'$/, "");
+    });
   } else {
     tempArr = tempArr.map((x) => {
       return x
