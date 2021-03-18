@@ -51,6 +51,8 @@ currentWin.on("focus", () => {
       typeSelect.value = "mybatis";
     } else if (currentValue.split("\n").every((x) => x.startsWith("UPDATE") || x.startsWith("INSERT ") )) {
       typeSelect.value = "sql";
+    } else if (checkJsonArr(currentValue)) {
+      typeSelect.value = "json";
     } else {
       let strArr = currentValue.split("\n");
       let setSize = new Set(strArr).size;
@@ -58,3 +60,11 @@ currentWin.on("focus", () => {
     }
   }
 });
+
+function checkJsonArr(str) {
+  try {
+    return JSON.parse(str) instanceof Array;
+  } catch (err) {
+    return false;
+  }
+}

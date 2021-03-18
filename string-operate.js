@@ -23,6 +23,9 @@ copyBtn.addEventListener("click", () => {
   } else if (selectValue === "generate") {
     inputString = generate(inputString);
     typeSelect.value = "sort";
+  } else if (selectValue === "json") {
+    inputString = getValueFromJson(inputString);
+    typeSelect.value = "sort";
   } else if (selectValue === "des") {
     inputString = getDAesString(inputString);
     typeSelect.value = "sort";
@@ -239,6 +242,16 @@ function getDAesString(encrypted) {
   } catch (err) {
     return "";
   }
+}
+
+function getValueFromJson(str) {
+  return JSON.parse(str).map((x) => {
+    let arr = Object.keys(x);
+    if (arr.includes("id")) {
+      return x.id;
+    }
+    return x[arr[0]];
+  }).join("\n");
 }
 
 module.exports = {
