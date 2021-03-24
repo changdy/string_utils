@@ -104,9 +104,9 @@ function strJoins(temp) {
   }
 }
 
-let keyWordsArr = "Byte,null,Float,Long,Short,String,Double,Integer,Boolean,Timestamp,LocalDate,BigDecimal,LocalDateTime,StringReader"
-  .split(",")
-  .map((x) => x + "), ");
+const nativeArr = "(Byte),(Float),(Long),(Short),(Double),(Integer),(Boolean),(BigDecimal)".split(',');
+const stringArr = "(String),(StringReader),(Timestamp),(LocalDate)".split(',');
+
 
 class MybatisLog {
   constructor(isParam, arr) {
@@ -127,12 +127,12 @@ class MybatisLog {
     return this.arr.length;
   }
 }
-let logTypeArr = [' DEBUG ', ' INFO ', ' TRACE ', ' WARN ', ' ERROR ']
+let logTypeArr = [/\WDEBUG\W/, /\WINFO\W/, /\WTRACE\W/,/\WWARN\W/,/\WERROR\W/]
 function logToSql(logs) {
   let logArr = logs.split("\n");
   let resultArr = [];
   for (let index = logArr.length - 1; index > 0; index--) {
-    if (/\(.+?\)$/.test(logArr[index]) && logTypeArr.every(x => !logArr[index].includes(x))) {
+    if (/\(.+?\)$/.test(logArr[index]) && logTypeArr.every(x => !x.test(logArr[index]))) {
       logArr[index - 1] = logArr[index - 1] + "\n" + logArr[index];
       logArr[index] = "";
     }
@@ -189,42 +189,30 @@ function getRealSql(resultArr, index) {
 }
 
 function parseParamLog(paramLog) {
-  let chars = (paramLog.replace(/.+==> Parameters: /, "") + ", ")
-    .replace(/, null, /g, ", null(null), ")
-    .replace(/, null, /g, ", null(null), ")
-    .replace(/^null, /, "null(null), ")
-    .split("");
-  if (chars.length <= 3) {
+  paramLog = paramLog.replace(/.+==> Parameters: /, " ")
+  if (paramLog.length <= 3) {
     return [];
   }
   let paramValue = [];
-  for (let i = 1, j = 0; i < chars.length; i++) {
-    if (chars[i] === "(") {
-      // 这里获取类型
-      let type = chars.slice(i + 1, i + 17).join("");
-      // 这里获取 参数信息
-      let value = chars.slice(j, i).join("");
-      for (const item of keyWordsArr) {
-        if (type.startsWith(item)) {
-          if (item.startsWith("LocalDateTime")) {
-            value = `'${value.replace("T", " ").replace(/\.\d+$/, "")}'`;
-          } else if (
-            item.startsWith("String") ||
-            item.startsWith("StringReader") ||
-            item.startsWith("Timestamp") ||
-            item.startsWith("LocalDate")
-          ) {
-            value = `'${value}'`;
-          }
-          j = i + item.length + 1;
-          // 此处 i 此处赋值之后 会再for 里面再次加1
-          i = j - 1; // 避免空字符串判断失败
-          paramValue.push(value);
-          break;
-        }
-      }
+  const splitedArr = paramLog.split(',');
+  let formerValue = '';
+  splitedArr.forEach(x => {
+    x = formerValue + x.replace(/^ /, '');
+    formerValue = '';
+    if (x.endsWith('(LocalDateTime)')) {
+      x = `'${x.replace("T", " ").replace(/\.\d+$/, "")}'`;
+    } else if (stringArr.some(y => x.endsWith(y))) {
+      x = `'${x.replace(/\n/g, '')}'`;
+    } else if (x !== 'null' && nativeArr.every(y => !x.endsWith(y))) {
+      formerValue = x;
+      return;
     }
-  }
+    if (x.endsWith("'")) {
+      paramValue.push(x.replace(/\(\w+\)'$/, "'"));
+    } else {
+      paramValue.push(x.replace(/\(\w+\)$/, ""));
+    }
+  });
   return paramValue;
 }
 
