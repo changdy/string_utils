@@ -140,13 +140,13 @@ function logToSql(logs) {
 
   for (let index = 0; index < logArr.length; index++) {
     const element = logArr[index];
-    if (element.includes(" ==> Parameters:")) {
+    if (/=> +Parameters: /.test(element)) {
       let arr = parseParamLog(element);
       if (arr.length > 0) {
         resultArr.push(new MybatisLog(true, arr));
       }
-    } else if (element.includes(" ==>  Preparing:")) {
-      let arr = element.replace(/.+==>  Preparing: /, "").split("?");
+    } else if (/=> +Preparing: /.test(element)) {
+      let arr = element.replace(/.+=> +Preparing: /, "").split("?");
       resultArr.push(new MybatisLog(false, arr));
     }
   }
@@ -189,7 +189,7 @@ function getRealSql(resultArr, index) {
 }
 
 function parseParamLog(paramLog) {
-  paramLog = paramLog.replace(/.+==> Parameters: /, " ")
+  paramLog = paramLog.replace(/.+=> +Parameters: /, " ")
   if (paramLog.length <= 3) {
     return [];
   }

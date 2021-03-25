@@ -45,7 +45,7 @@ currentWin.on("focus", () => {
     }
     if (numberReg.test(currentValue)) {
       typeSelect.value = "generate";
-    } else if (currentValue.includes(" ==>  Preparing:")) {
+    } else if (/=> +Parameters: /.test(currentValue)) {
       typeSelect.value = "log";
     } else if (mybatisReg.test(currentValue)) {
       typeSelect.value = "mybatis";
