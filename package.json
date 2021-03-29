@@ -5,7 +5,7 @@
   "keywords": [],
   "license": "MIT",
   "main": "./main.js",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "author": "changdy",
   "scripts": {
     "start": "electron .",
@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "bignumber.js": "^9.0.0",
-    "crypto-js": "^4.0.0"
+    "crypto-js": "^4.0.0",
+    "json-bigint": "^1.0.0"
   },
   "devDependencies": {
     "electron": "^8.2.1",

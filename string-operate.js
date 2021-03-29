@@ -4,6 +4,8 @@ const BigNumber = require("bignumber.js");
 const textArea = document.getElementById("textarea");
 const copyBtn = document.getElementById("btn");
 const typeSelect = document.getElementById("type-select");
+const JSONbig = require('json-bigint');
+
 
 copyBtn.addEventListener("click", () => {
   let inputString = textArea.value.trim();
@@ -233,7 +235,7 @@ function getDAesString(encrypted) {
 }
 
 function getValueFromJson(str) {
-  return JSON.parse(str).map((x) => {
+  return JSONbig.parse(str).map((x) => {
     let arr = Object.keys(x);
     if (arr.includes("id")) {
       return x.id;
